@@ -11,6 +11,7 @@ namespace YaznGhanem.WebApi
             {
                 var bytes = Encoding.UTF8.GetBytes(input);
                 var hash = sha256.ComputeHash(bytes);
+
                 return Convert.ToBase64String(hash);
             }
         }
