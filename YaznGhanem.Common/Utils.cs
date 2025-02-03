@@ -26,7 +26,7 @@ namespace YaznGhanem.Common
         public static string PhysicalImageCategory = "/AllImages/CategoryImg/";
        // public static string ImageCategoryURL = API_PATH + "/AllImages/CategoryImg/";
 
-        public static string PhysicalImageAdvertisment = "/AllImages/Homes/";
+        public static string PhysicalImageAdvertisment = "/AllImages/Homes_/";
        // public static string ImageAdvertismentURL = API_PATH + "/AllImages/Homes/";
 
         public static string PhysicalLLAMA_Model = "/LLAMA_Model/";
