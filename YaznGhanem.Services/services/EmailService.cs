@@ -68,7 +68,7 @@ namespace YaznGhanem.Services.services
             msg.Body = GetWebPageContent(message.Body, message.Subject);
 
             SmtpClient smtpClient = new SmtpClient("maid8.site4now.net", 25);
-            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("account@xxxx.com", "111122");
+            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("account@xlinecards.com", "1q2w!Q@WKhalil");
             smtpClient.Credentials = credentials;
             smtpClient.EnableSsl = false;
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
