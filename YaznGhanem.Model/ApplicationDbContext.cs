@@ -107,6 +107,17 @@ namespace YaznGhanem.Model
             modelBuilder.ApplyConfiguration(new BoFOperationsConfiguration());
             modelBuilder.ApplyConfiguration(new BoFOpDetailsConfiguration());
 
+            #region this for SQL View
+            modelBuilder.Entity<SQLView_TotalOperations>().HasNoKey().ToView("SQLView_TotalOperations");
+            modelBuilder.Entity<SQLView_TheSafe>().HasNoKey().ToView("SQLView_TheSafe");
+            modelBuilder.Entity<SQLView_Operations_Last7Days>().HasNoKey().ToView("SQLView_Operations_Last7Days");
+            #endregion SQL View
+
+            #region Stored procedure
+
+           // modelBuilder.Entity<ReportResult>().HasNoKey().ToView(null);
+
+            #endregion
         }
 
 

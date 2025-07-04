@@ -81,17 +81,17 @@ namespace YaznGhanem.Services
             CreateMap<FinancialEntitlement, AllFinancialEntitlementDto>()
                 .ForMember(dest => dest.Operations,
               opts => opts.MapFrom(src => src.Repository_Ins
-        .Select(ri => $"{ri.Date.ToString("dd/MM/yyyy")} : شراء {ri.Name} - {ri.BuyPriceOfAll} ل.س")
+        .OrderByDescending(m=>m.Date).Select(ri => $"{ri.Date.ToString("dd/MM/yyyy")} : شراء {ri.Name} - {ri.BuyPriceOfAll} ل.س")
         .Concat(src.Fuels
-            .Select(f => $"{f.Date.ToString("dd/MM/yyyy")} : شراء {f.Type} - {f.TotalPrice} ل.س"))
+            .OrderByDescending(m => m.Date).Select(f => $"{f.Date.ToString("dd/MM/yyyy")} : شراء {f.Type} - {f.TotalPrice} ل.س"))
         .Concat(src.Cars
-            .Select(f => $"{f.Date.ToString("dd/MM/yyyy")} : اجار سيارة - {f.TotalPrice} ل.س"))
+            .OrderByDescending(m => m.Date).Select(f => $"{f.Date.ToString("dd/MM/yyyy")} : اجار سيارة - {f.TotalPrice} ل.س"))
         .Concat(src.Dailies
-            .Select(f => $"{f.Date.ToString("dd/MM/yyyy")} : شراء {f.MaterialName} - {f.BuyPriceOfAll} ل.س"))
+            .OrderByDescending(m => m.Date).Select(f => $"{f.Date.ToString("dd/MM/yyyy")} : شراء {f.MaterialName} - {f.BuyPriceOfAll} ل.س"))
          .Concat(src.SupplierOfFarmsDailies
-            .Select(f => $"{f.Date.ToString("dd/MM/yyyy")} : كلفة قص {f.MaterialName} - {f.CuttingCostOfAll} ل.س"))
+            .OrderByDescending(m => m.Date).Select(f => $"{f.Date.ToString("dd/MM/yyyy")} : كلفة قص {f.MaterialName} - {f.CuttingCostOfAll} ل.س"))
          .Concat(src.WaxingFactoryDailies
-            .Select(f => $"{f.Date.ToString("dd/MM/yyyy")} : كلفة التشميع {f.MaterialName} - {f.WaxingCostOfAll} ل.س"))
+            .OrderByDescending(m => m.Date).Select(f => $"{f.Date.ToString("dd/MM/yyyy")} : كلفة التشميع {f.MaterialName} - {f.WaxingCostOfAll} ل.س"))
         .ToList()));
 
             CreateMap<Daily, List<Operations_Desktop>>()
@@ -226,6 +226,15 @@ namespace YaznGhanem.Services
             CreateMap<BoFOperations, BoF_DetailedDto>();
             CreateMap<BoFOpDetails, BoF_OpDetailsDto>();
             CreateMap<BoFUser, BoF_UserDTO>();
+
+            CreateMap<SQLView_TheSafe, TheSafeDto>()
+                .ForMember(dest => dest.Current, opt => opt.MapFrom(src => 0));
+            CreateMap<SQLView_TotalOperations, TotalOperations>()
+                .ForMember(dest => dest.IsProfit, opt => opt.MapFrom(src => (src.IsProfit == 1)));
+            CreateMap<SQLView_Operations_Last7Days, Operations_Last7DaysDto>();
+
+            CreateMap<OperationResult, TotalOperations>()
+                .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Amount));
             //
             #endregion
 

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace YaznGhanem.Model.Repository
 {
@@ -116,7 +117,9 @@ namespace YaznGhanem.Model.Repository
         public void Delete(T entity)
         {
             Set.Remove(entity);
+
         }
+       
 
         public bool Contains(Expression<Func<T, bool>> predicate)
         {
@@ -192,6 +195,16 @@ namespace YaznGhanem.Model.Repository
             }
         }
 
+        public async Task<List<T>> ExecuteSqlAsync(string sqlQuery)
+        {
+            return await _storeContext.Set<T>().FromSqlRaw(sqlQuery).ToListAsync();
+        }
+
+        public async Task<decimal> SumAsync(Expression<Func<T, decimal?>> selector)
+        {
+            
+            return (await Set.SumAsync(selector)) ?? 0;
+        }
 
         /// <summary>
         /// get backup from all tables
@@ -227,6 +240,7 @@ namespace YaznGhanem.Model.Repository
                     databaseData.Add(dbSetProperty.Name, tableData);
                 }
             }
+
 
             // Serialize dictionary to JSON
             string jsonData = JsonSerializer.Serialize(databaseData, new JsonSerializerOptions

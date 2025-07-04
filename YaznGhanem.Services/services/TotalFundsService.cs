@@ -6,6 +6,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using YaznGhanem.Common;
+using YaznGhanem.Data;
+using YaznGhanem.Data.Repositories;
 using YaznGhanem.Domain;
 using YaznGhanem.Domain.Entities;
 using YaznGhanem.Services.DTO;
@@ -239,6 +241,202 @@ namespace YaznGhanem.Services.services
 
         }
 
+        /// <summary>
+        /// Get All operations using SQL View
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ReportDto> GetAllOpt_UsingSQLView()
+        {
+            var result = new ReportDto();
+            var TotalFund = (await _unitOfWork.repository<TotalFunds>().GetAllAsync()).FirstOrDefault();
+            result.earns = new earnsdto()
+            {
+                TotalIn = TotalFund.TotalIn,
+                TotalOut = TotalFund.TotalOut,
+                Profits = TotalFund.Profits
+            };
+
+            //  Get TheSafe from view
+            result.TheSafe = _mapper.Map<TheSafeDto>((await _unitOfWork.repository<SQLView_TheSafe>().GetAllAsync()).FirstOrDefault());
+            result.TheSafe.Current = TotalFund.CurrentFund;
+
+            // Get unified operations from view
+            var operations = _mapper.Map<List<TotalOperations>>((await _unitOfWork.repository<SQLView_TotalOperations>().GetAllAsync()));
+                
+
+            // Process last 7 days data
+            var oneWeekAgo = DateTime.Now.Date.AddDays(-7);
+            var lastWeekOps = operations.Where(o => o.Date >= oneWeekAgo).ToList();
+
+            // Revenue operations (last 7 days)
+            result.Last7Days_revenue_Opt = lastWeekOps
+                .Where(o => o.IsProfit)
+                .GroupBy(o => o.Date)
+                .Select(g => new TotalOperations
+                {
+                    Date = g.Key,
+                    Cost = g.Sum(o => o.Cost),
+                    IsProfit = true
+                })
+                .ToList();
+
+            // Expense operations (last 7 days)
+            result.Last7Days_expenses_Opt = lastWeekOps
+                .Where(o => !o.IsProfit)
+                .GroupBy(o => o.Date)
+                .Select(g => new TotalOperations
+                {
+                    Date = g.Key,
+                    Cost = g.Sum(o => o.Cost),
+                    IsProfit = false
+                })
+                .ToList();
+
+            // Fill missing days
+            FillMissingDays(result.Last7Days_revenue_Opt, true);
+            FillMissingDays(result.Last7Days_expenses_Opt, false);
+
+            // Generate cumulative operations
+            result.AllOpt = GenerateCumulativeOperations(operations);
+
+            return result;
+
+
+        }
+
+        private void FillMissingDays(List<TotalOperations> operations, bool isProfit)
+        {
+            var last7Days = Enumerable.Range(0, 7)
+                .Select(i => DateTime.Now.Date.AddDays(-i))
+                .ToList();
+
+            foreach (var day in last7Days)
+            {
+                if (!operations.Any(o => o.Date == day))
+                {
+                    operations.Add(new TotalOperations
+                    {
+                        Date = day,
+                        Cost = 0,
+                        IsProfit = isProfit
+                    });
+                }
+            }
+            operations.Sort((a, b) => a.Date.CompareTo(b.Date));
+        }
+        
+        // Generate cumulative operations
+        private List<TotalOperations> GenerateCumulativeOperations(List<TotalOperations> operations)
+        {
+            // First convert expenses to negative values
+            var signedOperations = operations
+                .Select(o => new TotalOperations
+                {
+                    Date = o.Date,
+                    Cost = o.IsProfit ? o.Cost : -o.Cost,
+                    IsProfit = o.IsProfit
+                })
+                .ToList();
+
+            // Group by date and calculate daily net
+            var dailyNets = signedOperations
+                .GroupBy(o => o.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    NetAmount = g.Sum(o => o.Cost)
+                })
+                .OrderBy(d => d.Date)
+                .ToList();
+
+            // Calculate cumulative sum
+            decimal cumulative = 0;
+            var cumulativeOperations = new List<TotalOperations>();
+
+            foreach (var day in dailyNets)
+            {
+                cumulative += day.NetAmount;
+                cumulativeOperations.Add(new TotalOperations
+                {
+                    Date = day.Date,
+                    Cost = cumulative,
+                    IsProfit = cumulative >= 0
+                });
+            }
+
+            return cumulativeOperations;
+        }
+
+
+        /// <summary>
+        /// Get All operations using stored procedure 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ReportDto> GetAllOpt_UsingSP()
+        {
+            var report_fromSP = await _unitOfWork.GetReportDataAsync();
+
+           
+            var result = new ReportDto();
+            result.earns = new earnsdto()
+            {
+                TotalIn = report_fromSP.TotalFunds.TotalIn,
+                TotalOut = report_fromSP.TotalFunds.TotalOut,
+                Profits = report_fromSP.TotalFunds.Profits
+            };
+
+            //  Get TheSafe from view
+            result.TheSafe = new TheSafeDto
+            {
+                Current = report_fromSP.TotalFunds.CurrentFund,
+                TotalIn = report_fromSP.TheSafe.TotalIn,
+                TotalOut = report_fromSP.TheSafe.TotalOut
+            };
+            
+
+            // Get unified operations from view
+            var operations = _mapper.Map<List<TotalOperations>>(report_fromSP.Operations);
+
+
+            // Process last 7 days data
+            var oneWeekAgo = DateTime.Now.Date.AddDays(-7);
+            var lastWeekOps = operations.Where(o => o.Date >= oneWeekAgo).ToList();
+
+            // Revenue operations (last 7 days)
+            result.Last7Days_revenue_Opt = lastWeekOps
+                .Where(o => o.IsProfit)
+                .GroupBy(o => o.Date)
+                .Select(g => new TotalOperations
+                {
+                    Date = g.Key,
+                    Cost = g.Sum(o => o.Cost),
+                    IsProfit = true
+                })
+                .ToList();
+
+            // Expense operations (last 7 days)
+            result.Last7Days_expenses_Opt = lastWeekOps
+                .Where(o => !o.IsProfit)
+                .GroupBy(o => o.Date)
+                .Select(g => new TotalOperations
+                {
+                    Date = g.Key,
+                    Cost = g.Sum(o => o.Cost),
+                    IsProfit = false
+                })
+                .ToList();
+
+            // Fill missing days
+            FillMissingDays(result.Last7Days_revenue_Opt, true);
+            FillMissingDays(result.Last7Days_expenses_Opt, false);
+
+            // Generate cumulative operations
+            result.AllOpt = GenerateCumulativeOperations(operations);
+
+            return result;
+
+
+        }
         public async Task<bool> UpdateFunds(TotalFundsDto dto)
         {
             var model = (await _unitOfWork.repository<TotalFunds>().Get(m => m.Id == dto.Id)).FirstOrDefault();

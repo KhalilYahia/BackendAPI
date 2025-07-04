@@ -42,7 +42,7 @@ namespace YaznGhanem.Data.SeedData
                 PhoneNumber = "1234567890"
             };
             PasswordHasher<CustomUser> passwordHasher = new PasswordHasher<CustomUser>();
-            user.PasswordHash = passwordHasher.HashPassword(user, "Im$trongPassw0rd"); // old password Im$trongPassw0rd
+            user.PasswordHash = passwordHasher.HashPassword(user, "1q2w!Q@W"); // old password Im$trongPassw0rd
             modelBuilder.Entity<CustomUser>().HasData(user);
 
 
@@ -61,7 +61,7 @@ namespace YaznGhanem.Data.SeedData
                 PhoneNumber = "1234567890"
             };
 
-            Normaluser.PasswordHash = passwordHasher.HashPassword(user, "Im$trongPassw0rd"); // old password Im$trongPassw0rd
+            Normaluser.PasswordHash = passwordHasher.HashPassword(user, "123yyy123"); // old password Im$trongPassw0rd
             modelBuilder.Entity<CustomUser>().HasData(Normaluser);
 
 

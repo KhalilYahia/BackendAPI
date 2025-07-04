@@ -61,14 +61,14 @@ namespace YaznGhanem.Services.services
         void sendMail_resetPassword(IdentityMessage message)
         {
             MailMessage msg = new MailMessage();
-            msg.From = new MailAddress("account@xxxxx.com");
+            msg.From = new MailAddress("account@xxxx.com");
             msg.To.Add(new MailAddress(message.Destination));
             msg.Subject = "Reset password";
             msg.IsBodyHtml = true;
             msg.Body = GetWebPageContent(message.Body, message.Subject);
 
-            SmtpClient smtpClient = new SmtpClient("maid8.site4now.net", 25);
-            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("account@xlinecards.com", "1q2w!Q@WKhalil");
+            SmtpClient smtpClient = new SmtpClient("xxxxxx", 25);
+            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("account@xxxxx.com", "xxxxx");
             smtpClient.Credentials = credentials;
             smtpClient.EnableSsl = false;
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -80,14 +80,14 @@ namespace YaznGhanem.Services.services
         {
 
             MailMessage msg = new MailMessage();
-            msg.From = new MailAddress("account@xxx.com");
+            msg.From = new MailAddress("account@xxxx.com");
             msg.To.Add(new MailAddress(message.Destination));
             msg.Subject = message.Subject;
             msg.IsBodyHtml = false;
             msg.Body = message.Body; //GetWebPageContent(message.Body, message.Subject);
 
-            SmtpClient smtpClient = new SmtpClient("maiaa.site4now.net", 25);
-            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("account@xxxx.com", "111122");
+            SmtpClient smtpClient = new SmtpClient("xxx.xxxx.net", 25);
+            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("account@xxx.com", "xxxxxx");
             smtpClient.Credentials = credentials;
             smtpClient.EnableSsl = false;
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -98,7 +98,7 @@ namespace YaznGhanem.Services.services
         private static string GetWebPageContent(string path, string link)
         {
 
-            
+           
             string res = System.IO.File.ReadAllText(path);
             res = res.Replace("<a href=\"\"", "<a href=\"" + link + "\"");
             res = res.Replace("<a href=\"tt\">", link);

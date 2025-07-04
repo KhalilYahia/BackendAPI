@@ -58,5 +58,35 @@ namespace YaznGhanem.Model.Repository
         {
             throw new NotImplementedException();
         }
+
+        CustomUser IUserRepository.FindByUserName(string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<CustomUser> IUserRepository.FindByUserNameAsync(string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<CustomUser> IUserRepository.FindByUserNameAsync(CancellationToken cancellationToken, string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        CustomUser IUserRepository.FindByEmail(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<CustomUser> IUserRepository.FindByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<CustomUser> IUserRepository.FindByEmailAsync(CancellationToken cancellationToken, string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

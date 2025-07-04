@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,6 @@ namespace YaznGhanem.Domain
     {
         IGenericRepository<TEntity> repository<TEntity>() where TEntity : class;
         Task<int> Complete();
+        DbContext GetDbContext();
     }
 }

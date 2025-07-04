@@ -73,5 +73,12 @@ namespace YaznGhanem.Services.DTO
         public bool IsProfit { get; set; }
     }
 
+
+    public class Operations_Last7DaysDto
+    {
+        public DateTime OperationDate { get; set; }
+        public decimal Revenue { get; set; }
+        public decimal Expenses { get; set; }
+    }
 }
 

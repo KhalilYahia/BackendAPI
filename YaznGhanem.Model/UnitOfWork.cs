@@ -16,7 +16,7 @@ namespace YaznGhanem.Data
     {
         private readonly ApplicationDbContext _dbContext;
         private Hashtable _repositories;
-
+        
         public UnitOfWork(ApplicationDbContext MyDbContext)
         {
             _dbContext = MyDbContext;
@@ -25,7 +25,10 @@ namespace YaznGhanem.Data
         {
             return await _dbContext.SaveChangesAsync();
         }
-
+        public DbContext GetDbContext()
+        {
+            return _dbContext;
+        }
         public void Dispose()
         {
             _dbContext.Dispose();

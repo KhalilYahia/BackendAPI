@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace YaznGhanem.Controllers
 {
-    [Authorize(Roles = "Admin")]
+   // [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("[controller]")]
     public class TotalFundsController : ApiBaseController
@@ -40,6 +40,18 @@ namespace YaznGhanem.Controllers
         public async Task<ActionResult<ReportDto>> GetAllOpt()
         {
             var totalFunds = await _totalFundsService.GetAllOpt();
+            return Ok(totalFunds);
+        }
+        [HttpGet("GetAllOpt_UsingSQLView")]
+        public async Task<ActionResult<ReportDto>> GetAllOpt_UsingSQLView()
+        {
+            var totalFunds = await _totalFundsService.GetAllOpt_UsingSQLView();
+            return Ok(totalFunds);
+        }
+        [HttpGet("GetAllOpt_UsingSP")]
+        public async Task<ActionResult<ReportDto>> GetAllOpt_UsingSP()
+        {
+            var totalFunds = await _totalFundsService.GetAllOpt_UsingSP();
             return Ok(totalFunds);
         }
 
